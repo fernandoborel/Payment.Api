@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="Payment.API/Payment.API.csproj" />
+  <Project Path="Payment.WorkerService/Payment.WorkerService.csproj" />
+</Solution>

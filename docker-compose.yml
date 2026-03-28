@@ -1,0 +1,63 @@
+services:
+
+  payment-api:
+    container_name: payment-api
+    build:
+      context: .
+      dockerfile: Payment.Api/Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      - payment-mongodb
+      - payment-mongoexpress
+    environment:
+      - MongoDB__Host=mongodb://payment-mongodb:27017
+    networks:
+      - payment_network
+
+  payment-workerservice:
+    container_name: payment-workerservice
+    build:
+      context: .
+      dockerfile: Payment.WorkerService/Dockerfile   
+    networks:
+      - payment_network
+
+  payment-mongodb:
+    image: mongo:7
+    container_name: payment-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - payment_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  payment-mongoexpress:
+    image: mongo-express
+    container_name: payment-mongoexpress
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: payment-mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - payment-mongodb
+    networks:
+      - payment_network
+      
+networks:
+  payment_network:
+    external: true
+    name: shared-network
+
+volumes:
+  mongo_data:
