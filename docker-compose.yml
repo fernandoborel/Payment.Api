@@ -19,7 +19,9 @@ services:
     container_name: payment-workerservice
     build:
       context: .
-      dockerfile: Payment.WorkerService/Dockerfile   
+      dockerfile: Payment.WorkerService/Dockerfile  
+    depends_on:
+      - payment-api
     networks:
       - payment_network
 
